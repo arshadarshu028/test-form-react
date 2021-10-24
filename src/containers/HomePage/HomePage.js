@@ -105,6 +105,15 @@ const HomePage = () => {
       return;
     }
     if (
+      formError.fullNameError ||
+      formError.dobError ||
+      formError.tncError ||
+      formError.emailError ||
+      formError.regionError
+    ) {
+      return;
+    }
+    if (
       formData.region === "Select" ||
       formData.dob === "" ||
       formData.fullName === "" ||
@@ -164,6 +173,7 @@ const HomePage = () => {
                   error={formError.fullNameError}
                   errorMessage={"Enter valid name"}
                   placeHolder={"Please enter your full name"}
+                  disabled={isRegionLoader}
                 />
               </Col>
               <Col lg={6}>
@@ -176,6 +186,7 @@ const HomePage = () => {
                   error={formError.emailError}
                   errorMessage={"Enter valid emailId"}
                   placeHolder={"Please enter your emailId"}
+                  disabled={isRegionLoader}
                 />
               </Col>
             </Row>
@@ -195,6 +206,7 @@ const HomePage = () => {
                   }
                   maxLength={10}
                   placeHolder={"MM/DD/YYYY"}
+                  disabled={isRegionLoader}
                 />
               </Col>
               <Col lg={6}>
@@ -212,6 +224,7 @@ const HomePage = () => {
                   onChange={onchangeInput}
                   error={formError.regionError}
                   errorMessage={"Select your region"}
+                  disabled={isRegionLoader}
                 />
               </Col>
             </Row>
@@ -223,6 +236,7 @@ const HomePage = () => {
                   checked={formData.tnc}
                   onChange={onchangeInput}
                   error={formError.tncError}
+                  disabled={isRegionLoader}
                 />
               </Col>
             </Row>

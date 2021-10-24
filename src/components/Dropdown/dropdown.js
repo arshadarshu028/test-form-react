@@ -4,9 +4,10 @@ import { Form } from "react-bootstrap";
 
 const Dropdown = ({ val, onSearch, ...props }) => {
   return (
-    <>
+    <div className="mb-3">
       <Form.Label>{props.label}</Form.Label>
       <Form.Select
+        disabled={props.disabled}
         className="me-sm-2  "
         id={props.id}
         value={props.value}
@@ -23,7 +24,7 @@ const Dropdown = ({ val, onSearch, ...props }) => {
       <Form.Control.Feedback type="invalid">
         {props.errorMessage}
       </Form.Control.Feedback>
-    </>
+    </div>
   );
 };
 

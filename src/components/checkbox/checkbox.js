@@ -12,6 +12,7 @@ const Checkbox = ({ val, onSearch, ...props }) => {
           label={props.label}
           onChange={props.onChange}
           isInvalid={props.error}
+          disabled={props.disabled}
         />
       </Form.Group>
     </>

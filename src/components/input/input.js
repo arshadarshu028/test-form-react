@@ -16,6 +16,7 @@ const Input = ({ val, onSearch, ...props }) => {
           isInvalid={props.error}
           maxLength={props.maxLength}
           placeholder={props.placeHolder}
+          disabled={props.disabled}
         />
         <Form.Control.Feedback type="invalid">
           {props.errorMessage}
