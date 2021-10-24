@@ -31,9 +31,12 @@ const HomePage = () => {
     tncError: false,
   });
 
-  const [isAgeValid, setisAgeValid] = useState(true);
+  const [isAgeValid, setisAgeValid] = useState(false);
   const [isRegionLoader, setisRegionLoader] = useState(false);
   const [regionData, setregionData] = useState([]);
+  const [ageErrorMessage, setAgeErrorMessage] = useState(
+    "Enter valid date of birth (MM/DD/YYYY)"
+  );
 
   const onchangeInput = (e, id) => {
     if (e.target.id === "fullName") {
@@ -55,8 +58,13 @@ const HomePage = () => {
       var age = moment(getAge, "DD/MM/YYYY", true)
         .month(0)
         .from(moment().month(0));
-      if (age.split(" ")[0] < 18) setisAgeValid(true);
-      else setisAgeValid(false);
+      if (age.split(" ")[0] < 18 || age === "Invalid date") {
+        setisAgeValid(false);
+        setAgeErrorMessage("Enter valid date of birth (MM/DD/YYYY)");
+      } else {
+        setisAgeValid(true);
+        setAgeErrorMessage("Age should be 18");
+      }
       setFormData({ ...formData, dob: e.target.value });
 
       setFormError({
@@ -206,11 +214,7 @@ const HomePage = () => {
                   onchangeInput={onchangeInput}
                   value={formData.dob}
                   error={formError.dobError}
-                  errorMessage={
-                    isAgeValid
-                      ? "Enter valid date of birth (MM/DD/YYYY)"
-                      : "Age should be 18"
-                  }
+                  errorMessage={ageErrorMessage}
                   maxLength={10}
                   placeHolder={"MM/DD/YYYY"}
                   disabled={isRegionLoader}
