@@ -12,6 +12,7 @@ const emailRE =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 let regexText = /^[a-zA-Z\s]*$/;
+let dobText = /^[0-9/]*$/;
 
 const HomePage = () => {
   const [formData, setFormData] = useState({
@@ -62,7 +63,9 @@ const HomePage = () => {
       if (age.split(" ")[0] < 18 || age.split(" ")[0] === "a")
         setisAgeValid(false);
       else setisAgeValid(true);
+      console.log(age, !dobText.test(e.target.value));
       setFormData({ ...formData, dob: e.target.value });
+
       setFormError({
         ...formError,
         dobError:
@@ -70,6 +73,8 @@ const HomePage = () => {
           age.split(" ")[0] < 18 ||
           age.split(" ")[0] === "a" ||
           age.split(" ")[0] === "in" ||
+          age.split(" ")[1] === "days" ||
+          !dobText.test(e.target.value) ||
           age === "Invalid date",
       });
     }
@@ -153,6 +158,14 @@ const HomePage = () => {
       .then((res) => {
         setregionData(res.data);
         setisRegionLoader(false);
+        setFormData({
+          ...formData,
+          fullName: "",
+          email: "",
+          dob: "",
+          region: "Select",
+          tnc: false,
+        });
       });
   };
 
@@ -174,6 +187,7 @@ const HomePage = () => {
                   errorMessage={"Enter valid name"}
                   placeHolder={"Please enter your full name"}
                   disabled={isRegionLoader}
+                  maxLength={60}
                 />
               </Col>
               <Col lg={6}>
@@ -187,6 +201,7 @@ const HomePage = () => {
                   errorMessage={"Enter valid emailId"}
                   placeHolder={"Please enter your emailId"}
                   disabled={isRegionLoader}
+                  maxLength={30}
                 />
               </Col>
             </Row>
