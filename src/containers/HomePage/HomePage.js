@@ -31,7 +31,6 @@ const HomePage = () => {
     tncError: false,
   });
 
-  const [isAgeValid, setisAgeValid] = useState(false);
   const [isRegionLoader, setisRegionLoader] = useState(false);
   const [regionData, setregionData] = useState([]);
   const [ageErrorMessage, setAgeErrorMessage] = useState(
@@ -54,27 +53,28 @@ const HomePage = () => {
     }
     if (e.target.id === "dob") {
       if (!dobText.test(e.target.value)) return;
+      var ageCal = Math.floor(
+        (new Date() - new Date(e.target.value)) / 1000 / 60 / 60 / 24 / 365.25
+      );
       const getAge = moment(e.target.value, "MM/DD/YYYY").format("DD/MM/YYYY");
       var age = moment(getAge, "DD/MM/YYYY", true)
         .month(0)
         .from(moment().month(0));
-      if (age.split(" ")[0] < 18 || age === "Invalid date") {
-        setisAgeValid(false);
-        setAgeErrorMessage("Enter valid date of birth (MM/DD/YYYY)");
-      } else {
-        setisAgeValid(true);
+      if (ageCal < 18) {
         setAgeErrorMessage("Age should be 18");
+      } else {
+        setAgeErrorMessage("Enter valid date of birth (MM/DD/YYYY)");
       }
       setFormData({ ...formData, dob: e.target.value });
-
       setFormError({
         ...formError,
         dobError:
           e.target.value.length < 10 ||
-          age.split(" ")[0] < 18 ||
-          age.split(" ")[0] === "a" ||
-          age.split(" ")[0] === "in" ||
-          age.split(" ")[1] === "days" ||
+          // age.split(" ")[0] < 18 ||
+          ageCal < 18 ||
+          // age.split(" ")[0] === "a" ||
+          // age.split(" ")[0] === "in" ||
+          // age.split(" ")[1] === "days" ||
           !dobText.test(e.target.value) ||
           age === "Invalid date",
       });
