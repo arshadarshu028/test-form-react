@@ -31,7 +31,7 @@ const HomePage = () => {
     tncError: false,
   });
 
-  const [isAgeValid, setisAgeValid] = useState(false);
+  const [isAgeValid, setisAgeValid] = useState(true);
   const [isRegionLoader, setisRegionLoader] = useState(false);
   const [regionData, setregionData] = useState([]);
 
@@ -50,13 +50,13 @@ const HomePage = () => {
       setFormError({ ...formError, emailError: !emailRE.test(e.target.value) });
     }
     if (e.target.id === "dob") {
+      if (!dobText.test(e.target.value)) return;
       const getAge = moment(e.target.value, "MM/DD/YYYY").format("DD/MM/YYYY");
       var age = moment(getAge, "DD/MM/YYYY", true)
         .month(0)
         .from(moment().month(0));
-      if (age.split(" ")[0] < 18 || age.split(" ")[0] === "a")
-        setisAgeValid(false);
-      else setisAgeValid(true);
+      if (age.split(" ")[0] < 18) setisAgeValid(true);
+      else setisAgeValid(false);
       setFormData({ ...formData, dob: e.target.value });
 
       setFormError({
