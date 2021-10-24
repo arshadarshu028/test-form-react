@@ -6,13 +6,12 @@ import Dropdown from "../../components/Dropdown/dropdown";
 import Buttons from "../../components/Button/button";
 import TableData from "../../components/Table/table";
 import moment from "moment";
+import axios from "axios";
 
 const emailRE =
   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-let regexText = /^([a-zA-Z0-9-]+\s)[a-zA-Z0-9-]$/;
-let dobRegx =
-  /^(((0[13-9]|1[012])[-/]?(0[1-9]|[12][0-9]|30)|(0[13578]|1[02])[-/]?31|02[-/]?(0[1-9]|1[0-9]|2[0-8]))[-/]?[0-9]{4}|02[-/]?29[-/]?([0-9]{2}(([2468][048]|[02468][48])|[13579][26])|([13579][26]|[02468][048]|0[0-9]|1[0-6])00))$/;
+let regexText = /^[a-zA-Z\s]*$/;
 
 const HomePage = () => {
   const [formData, setFormData] = useState({
@@ -33,11 +32,19 @@ const HomePage = () => {
 
   const [isAgeValid, setisAgeValid] = useState(false);
   const [isRegionLoader, setisRegionLoader] = useState(false);
+  const [regionData, setregionData] = useState([]);
+
+  function validate(s) {
+    if (/^(\w+\s?)*\s*$/.test(s)) {
+      return s.replace(/\s+$/, "");
+    }
+    return "ss";
+  }
 
   const onchangeInput = (e, id) => {
-    console.log(e.target.id, e.target.value);
     if (e.target.id === "fullName") {
-      setFormData({ ...formData, fullName: e.target.value });
+      let value = e.target.value.replace("  ", " ");
+      setFormData({ ...formData, fullName: value });
       setFormError({
         ...formError,
         fullNameError: !regexText.test(e.target.value),
@@ -52,8 +59,8 @@ const HomePage = () => {
       var age = moment(getAge, "DD/MM/YYYY", true)
         .month(0)
         .from(moment().month(0));
-      console.log(age);
-      if (age.split(" ")[0] < 18) setisAgeValid(false);
+      if (age.split(" ")[0] < 18 || age.split(" ")[0] === "a")
+        setisAgeValid(false);
       else setisAgeValid(true);
       setFormData({ ...formData, dob: e.target.value });
       setFormError({
@@ -61,14 +68,16 @@ const HomePage = () => {
         dobError:
           e.target.value.length < 10 ||
           age.split(" ")[0] < 18 ||
-          age === "a" ||
-          age == "Invalid date" ||
-          age.includes("in") ||
-          age.includes("hours"),
+          age.split(" ")[0] === "a" ||
+          age.split(" ")[0] === "in" ||
+          age === "Invalid date",
       });
     }
     if (e.target.id === "region") {
       setFormData({ ...formData, region: e.target.value });
+      if (e.target.value === "Select")
+        setFormError({ ...formError, regionError: true });
+      else setFormError({ ...formError, regionError: false });
     }
     if (e.target.id === "tnc") {
       setFormData({ ...formData, tnc: e.target.checked });
@@ -77,6 +86,24 @@ const HomePage = () => {
   };
 
   const handleSubmit = (e) => {
+    console.log(formData);
+    if (
+      formData.region === "Select" &&
+      formData.dob === "" &&
+      formData.fullName === "" &&
+      !formData.tnc &&
+      formData.email === ""
+    ) {
+      setFormError({
+        ...formError,
+        fullNameError: true,
+        dobError: true,
+        tncError: true,
+        emailError: true,
+        regionError: true,
+      });
+      return;
+    }
     if (
       formData.region === "Select" ||
       formData.dob === "" ||
@@ -84,24 +111,41 @@ const HomePage = () => {
       !formData.tnc ||
       formData.email === ""
     ) {
-      setFormError({
-        ...formError,
-        regionError: true,
-        fullNameError: true,
-        emailError: true,
-        dobError: true,
-        tncError: true,
-      });
-      fetch(
-        `http://restcountries.herokuapp.com/api/v1/region/${formData.region}`
-      )
-        .then((res) => res.json())
-        .then((json) => {
-          console.log(json);
+      if (formData.fullName === "")
+        setFormError({
+          ...formError,
+          fullNameError: true,
         });
+      if (formData.email === "")
+        setFormError({
+          ...formError,
+          emailError: true,
+        });
+      if (formData.dob === "")
+        setFormError({
+          ...formError,
+          dobError: true,
+        });
+      if (formData.region === "Select")
+        setFormError({
+          ...formError,
+          regionError: true,
+        });
+      if (!formData.tnc)
+        setFormError({
+          ...formError,
+          tncError: true,
+        });
+      return;
     }
+    setisRegionLoader(true);
+    axios
+      .get(`https://restcountries.com/v3.1/region/${formData.region}`)
+      .then((res) => {
+        setregionData(res.data);
+        setisRegionLoader(false);
+      });
   };
-  console.log(formData);
 
   return (
     <section>
@@ -146,7 +190,7 @@ const HomePage = () => {
                   error={formError.dobError}
                   errorMessage={
                     isAgeValid
-                      ? "Enter date of birth (MM/DD/YYYY)"
+                      ? "Enter valid date of birth (MM/DD/YYYY)"
                       : "Age should be 18"
                   }
                   maxLength={10}
@@ -187,17 +231,20 @@ const HomePage = () => {
                 <Buttons
                   label="Submit"
                   className="rounded-5"
-                  // disabled={false}
+                  disabled={isRegionLoader}
+                  loading={isRegionLoader}
                   onSubmit={handleSubmit}
                 />
               </Col>
             </Row>
-            <hr />
-            <Row>
-              <Col lg={12}>
-                <TableData label="Submit" />
-              </Col>
-            </Row>
+            {regionData.length > 0 && (
+              <Row className="mt-3">
+                <hr />
+                <Col lg={12}>
+                  <TableData label="Submit" data={regionData} />
+                </Col>
+              </Row>
+            )}
           </Col>
         </Row>
       </Container>

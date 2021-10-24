@@ -2392,7 +2392,7 @@ const data = [
   },
 ];
 
-const TableData = () => {
+const TableData = (props) => {
   return (
     <Table striped bordered hover responsive>
       <thead>
@@ -2405,7 +2405,7 @@ const TableData = () => {
         </tr>
       </thead>
       <tbody>
-        {data.map((val, id) => (
+        {props.data.map((val, id) => (
           <tr>
             <td>{id + 1}</td>
             <td>{val.name.official}</td>
