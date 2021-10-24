@@ -5,7 +5,6 @@ const Buttons = (props) => {
     <Button
       type="submit"
       className="bg-info w-50 rounded text-white py-2"
-      rounded
       variant="info"
       disabled={props.disabled}
       onClick={props.onSubmit}

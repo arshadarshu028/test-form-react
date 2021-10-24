@@ -18,7 +18,9 @@ const Dropdown = ({ val, onSearch, ...props }) => {
           Select
         </option>
         {props.options.map((val) => (
-          <option value={val.name}>{val.name}</option>
+          <option key={val.name} value={val.name}>
+            {val.name}
+          </option>
         ))}
       </Form.Select>
       <Form.Control.Feedback type="invalid">

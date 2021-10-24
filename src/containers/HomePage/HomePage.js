@@ -9,7 +9,7 @@ import moment from "moment";
 import axios from "axios";
 
 const emailRE =
-  /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
 let regexText = /^[a-zA-Z\s]*$/;
 let dobText = /^[0-9/]*$/;
@@ -35,13 +35,6 @@ const HomePage = () => {
   const [isRegionLoader, setisRegionLoader] = useState(false);
   const [regionData, setregionData] = useState([]);
 
-  function validate(s) {
-    if (/^(\w+\s?)*\s*$/.test(s)) {
-      return s.replace(/\s+$/, "");
-    }
-    return "ss";
-  }
-
   const onchangeInput = (e, id) => {
     if (e.target.id === "fullName") {
       let value = e.target.value.replace("  ", " ");
@@ -51,19 +44,19 @@ const HomePage = () => {
         fullNameError: !regexText.test(e.target.value),
       });
     }
+
     if (e.target.id === "email") {
       setFormData({ ...formData, email: e.target.value });
       setFormError({ ...formError, emailError: !emailRE.test(e.target.value) });
     }
     if (e.target.id === "dob") {
-      const getAge = moment(e.target.value).format("DD/MM/YYYY");
+      const getAge = moment(e.target.value, "MM/DD/YYYY").format("DD/MM/YYYY");
       var age = moment(getAge, "DD/MM/YYYY", true)
         .month(0)
         .from(moment().month(0));
       if (age.split(" ")[0] < 18 || age.split(" ")[0] === "a")
         setisAgeValid(false);
       else setisAgeValid(true);
-      console.log(age, !dobText.test(e.target.value));
       setFormData({ ...formData, dob: e.target.value });
 
       setFormError({
@@ -91,7 +84,6 @@ const HomePage = () => {
   };
 
   const handleSubmit = (e) => {
-    console.log(formData);
     if (
       formData.region === "Select" &&
       formData.dob === "" &&
